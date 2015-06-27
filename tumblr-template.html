@@ -34,9 +34,9 @@
     <meta name="twitter:card" content="summary"/>
     <meta property="og:title" content="Damián Arrillaga"/>
     <meta property="twitter:title" content="Damián Arrillaga"/>
-    <meta name="twitter:description" content="I am an enthusiast Android developer."/>
-    <meta property="og:description" content="I am an enthusiast Android developer."/>
-    <meta property="description" content="I am an enthusiast Android developer."/>
+    <meta name="twitter:description" content="{Title}"/>
+    <meta property="og:description" content="{Title}"/>
+    <meta property="description" content="{Title}"/>
     <meta name="theme-color" content="#00796B"/>
 
     <meta name="application-name" content="Damián Arrillaga"/>
@@ -61,12 +61,18 @@
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/public/apple-touch-icon-144-precomposed.png"/>
                                    <link rel="shortcut icon" href="/public/favicon.ico"/>
 
-    <link rel="stylesheet" href="http://static.tumblr.com/096usch/xesnqjeyn/tumblr-template.css"/>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/color-brewer.min.css"/>
+
+    <link rel="stylesheet" href="http://static.tumblr.com/096usch/yKJnqkxdw/tumblr-template.css"/>
 
     <!-- RSS -->
     <link rel="alternate" type="application/rss+xml" title="RSS" href="/atom.xml"/>
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
     <script>!window.jQuery && document.write(unescape('%3Cscript src="http://static.tumblr.com/vr9xgox/sBgmmjhyw/jquery-1.9.1.min.js"%3E%3C/script%3E'));</script>
 
     {block:IfGoogleAnalyticsID}
@@ -168,9 +174,6 @@
 
                 {body}
                 {block:More}{/block:More}
-                {block:Permalink}
-                  {Body}
-                {/block:Permalink}
 
                 {block:HasTags}
                     <section class="inline-meta">

@@ -1178,6 +1178,10 @@ a.sidebar-nav-item:hover, a.sidebar-nav-item:focus {
     }
 }
 
+.hljs {
+    background: none;
+}
+
 .post-overlay-header-title {
     background-color: rgba(0, 0, 0, 0.35);
     position: absolute;
