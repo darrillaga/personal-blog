@@ -71,7 +71,28 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/highlight.min.js"></script>
-    <script>hljs.initHighlightingOnLoad();</script>
+    <script>
+      /*
+      Applies highlighting to all <pre><code>..</code></pre> blocks on a page.
+      */
+      function initHighlighting() {
+        if (initHighlighting.called)
+          return;
+        initHighlighting.called = true;
+
+        var blocks = document.querySelectorAll('pre code:not(.highlighted)');
+        Array.prototype.forEach.call(blocks, hljs.highlightBlock);
+      }
+
+      /*
+      Attaches highlighting to the page load event.
+      */
+      function initHighlightingOnLoad() {
+        addEventListener('DOMContentLoaded', initHighlighting, false);
+        addEventListener('load', initHighlighting, false);
+      };
+      initHighlightingOnLoad();
+   </script>
 
     <script>!window.jQuery && document.write(unescape('%3Cscript src="http://static.tumblr.com/vr9xgox/sBgmmjhyw/jquery-1.9.1.min.js"%3E%3C/script%3E'));</script>
 

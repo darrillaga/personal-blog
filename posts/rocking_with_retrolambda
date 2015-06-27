@@ -1,0 +1,266 @@
+<h3>Hi everyone.</h3>
+
+<p>Java 8 arrived with some great features.</p>
+
+<p>The one I am going to write about, allows us to use in some way the <a href="https://en.wikipedia.org/wiki/Functional_programming">functional programming paradigm</a>.</p>
+
+[[MORE]]
+
+<p>Java added two things to approach that.</p>
+
+<p>First, you can implement every single method interface (called functional interface) with a new syntax that uses the lambda style</p>
+
+<p>The other player in the new feature are the method references, if you have a method that is compatible with the required interface method you can directly put a reference to it.</p>
+
+<p>Lets check some code.</p>
+
+<div class="highlight">
+  <pre>
+    <code class="language-java hljs highlighted">
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Foo</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">int</span> <span class="hljs-title">globalIntValue</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;
+  }
+  
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">intValue</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-number">2</span>;
+  }
+  
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">intValueMultiplied</span><span class="hljs-params">(<span class="hljs-keyword">int</span> multiplier)</span> </span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-number">2</span> * multiplier;
+  }
+}
+
+<span class="hljs-comment">// An external API that parses ints but recieves them boxed in an interface</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">ExternalApi</span> </span>{
+  <span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">IntValueRetriever</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">retrieveInt</span><span class="hljs-params">()</span></span>;
+  }
+  
+  <span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">IntValueRetrieverFromProvider</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">retrieveInt</span><span class="hljs-params">(Foo provider)</span></span>;
+  }
+  
+  <span class="hljs-function">String <span class="hljs-title">formatInt</span><span class="hljs-params">(IntValueRetriever intValueRetriever)</span></span>;
+  <span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">parseInt</span><span class="hljs-params">(IntValueRetrieverFromProvider intValueRetrieverFromProvider)</span></span>;
+}
+
+<span class="hljs-comment">//Usage</span>
+
+ExternalApi externalApi = ...;
+
+<span class="hljs-comment">//Old school</span>
+<span class="hljs-keyword">final</span> Foo myFoo = <span class="hljs-keyword">new</span> Foo();
+
+externalApi.formatInt(<span class="hljs-keyword">new</span> IntValueRetriever() {
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">retrieveInt</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> myFoo.intValue();
+  }
+});
+
+<span class="hljs-comment">//With incompatible method</span>
+externalApi.formatInt(<span class="hljs-keyword">new</span> IntValueRetriever() {
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">retrieveInt</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> myFoo.intValueMultiplied(<span class="hljs-number">2</span>);
+  }
+});
+
+<span class="hljs-comment">//For static method</span>
+externalApi.formatInt(<span class="hljs-keyword">new</span> IntValueRetriever() {
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">retrieveInt</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> Foo.globalIntValue();
+  }
+});
+
+<span class="hljs-comment">//With provider</span>
+externalApi.parseInt(<span class="hljs-keyword">new</span> IntValueRetrieverFromProvider() {
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">retrieveInt</span><span class="hljs-params">(Foo foo)</span> </span>{
+    <span class="hljs-keyword">return</span> foo.intValue();
+  }
+});
+
+<span class="hljs-comment">//New school</span>
+<span class="hljs-keyword">final</span> Foo myFoo = <span class="hljs-keyword">new</span> Foo();
+
+externalApi.formatInt(myFoo::intValue);
+
+<span class="hljs-comment">//With incompatible method</span>
+externalApi.formatInt(() -&gt; myFoo.intValueMultiplied(<span class="hljs-number">2</span>));
+
+<span class="hljs-comment">//For static method</span>
+externalApi.formatInt(Foo::globalIntValue);
+
+<span class="hljs-comment">//With provider</span>
+externalApi.parseInt(Foo::intValue);
+
+<span class="hljs-comment">//Multiplied and with provider</span>
+externalApi.parseInt((foo) -&gt; foo.inValueMultiplied(<span class="hljs-number">2</span>));
+    </code>
+  </pre>
+</div>
+
+<p>What is the problem with the previous great feature?, my friends, the problem is java 8!!!, well... not java 8, I want this kind of code running on my Android projects but Android supports up to java 7 :(.</p>
+
+<p>But this is not the end, now is when Retrolambda comes to the rescue.</p>
+
+<p>Retrolambda is a support library made to backport the java 8 lambda code to java 7.</p>
+
+<p>And after that Evan Tatarka created <a href="https://github.com/evant/gradle-retrolambda">gradle-retrolambda</a> a gradle plugin that runs this backport on android and voilà, Android with Lambda support.</p>
+
+<p>No more boilerplate code with anonymous interfaces implementations and the end of big inner blocks (no wait, this plugin does not backport good practices)</p>
+
+<div class="highlight">
+  <pre>
+    <code class="language-java hljs highlighted">
+<span class="hljs-keyword">private</span> View mLoginAction;
+
+<span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setupLoginAction</span><span class="hljs-params">()</span> </span>{
+  mLoginAction = getView().findViewById(R.id.action_login);
+  mLoginAction.setOnClickListener(<span class="hljs-keyword">this</span>::onLoginAction);
+}
+
+<span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">onLoginAction</span><span class="hljs-params">(View view)</span> </span>{
+  <span class="hljs-comment">//... do stuff</span>
+}
+
+AtomicInteger widthWrapper = <span class="hljs-keyword">new</span> AtomicInteger();
+
+<span class="hljs-comment">//Runnables</span>
+mLoginAction.postDelayed(<span class="hljs-keyword">new</span> Runnable() {
+  <span class="hljs-annotation">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">run</span><span class="hljs-params">()</span> </span>{
+    widthWrapper.set(mLoginAction.getWidth());
+  }
+});
+
+<span class="hljs-comment">//Now</span>
+mLoginAction.postDelayed(() -&gt; widthWrapper.set(mLoginAction.getWidth()), <span class="hljs-number">100</span>);
+    </code>
+  </pre>
+</div>
+
+<p><b>TIP:</b> Mac users to get JAVA8_HOME env var working on Android Studio, declare the next in your bash profile</p>
+
+<div class="highlight">
+  <pre>
+    <code class="language-bash hljs highlighted">
+<span class="hljs-built_in">export</span> JAVA8_HOME=`/usr/libexec/java_home -v1.<span class="hljs-number">8</span>`
+
+launchctl setenv JAVA8_HOME <span class="hljs-variable">$JAVA8_HOME</span>
+    </code>
+  </pre>
+</div>  
+
+
+Sorry about the grammar, I hope this post to be useful for you
+
+
+<!-- Java code -->
+public class Foo {
+  public static int globalIntValue() {
+    return 1;
+  }
+  
+  public int intValue() {
+    return 2;
+  }
+  
+  public int intValueMultiplied(int multiplier) {
+    return 2 * multiplier;
+  }
+}
+
+// An external API that parses ints but recieves them boxed in an interface
+public interface ExternalApi {
+  interface IntValueRetriever {
+    int retrieveInt();
+  }
+  
+  interface IntValueRetrieverFromProvider {
+    int retrieveInt(Foo provider);
+  }
+  
+  String formatInt(IntValueRetriever intValueRetriever);
+  int parseInt(IntValueRetrieverFromProvider intValueRetrieverFromProvider);
+}
+
+//Usage
+
+ExternalApi externalApi = ...;
+
+//Old school
+final Foo myFoo = new Foo();
+
+externalApi.formatInt(new IntValueRetriever() {
+  public int retrieveInt() {
+    return myFoo.intValue();
+  }
+});
+
+//With incompatible method
+externalApi.formatInt(new IntValueRetriever() {
+  public int retrieveInt() {
+    return myFoo.intValueMultiplied(2);
+  }
+});
+
+//For static method
+externalApi.formatInt(new IntValueRetriever() {
+  public int retrieveInt() {
+    return Foo.globalIntValue();
+  }
+});
+
+//With provider
+externalApi.parseInt(new IntValueRetrieverFromProvider() {
+  public int retrieveInt(Foo foo) {
+    return foo.intValue();
+  }
+});
+
+//New school
+final Foo myFoo = new Foo();
+
+externalApi.formatInt(myFoo::intValue);
+
+//With incompatible method
+externalApi.formatInt(() -> myFoo.intValueMultiplied(2));
+
+//For static method
+externalApi.formatInt(Foo::globalIntValue);
+
+//With provider
+externalApi.parseInt(Foo::intValue);
+
+//Multiplied and with provider
+externalApi.parseInt((foo) -> foo.inValueMultiplied(2));
+
+<!-- Java code -->
+private View mLoginAction;
+
+private void setupLoginAction() {
+  mLoginAction = getView().findViewById(R.id.action_login);
+  mLoginAction.setOnClickListener(this::onLoginAction);
+}
+
+private void onLoginAction(View view) {
+  //... do stuff
+}
+
+AtomicInteger widthWrapper = new AtomicInteger();
+
+//Runnables
+mLoginAction.postDelayed(new Runnable() {
+  @Override
+  public void run() {
+    widthWrapper.set(mLoginAction.getWidth());
+  }
+});
+
+//Now
+mLoginAction.postDelayed(() -> widthWrapper.set(mLoginAction.getWidth()), 100);
+
+<!-- Bash code -->
+export JAVA8_HOME=`/usr/libexec/java_home -v1.8`
+
+launchctl setenv JAVA8_HOME $JAVA8_HOME
